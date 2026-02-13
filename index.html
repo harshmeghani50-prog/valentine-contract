@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Our Valentine Contract</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Georgia', serif;
+  background: linear-gradient(135deg, #0f0f0f, #3b000f, #5a0018);
+  color: #f5e6e8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.container {
+  width: 90%;
+  max-width: 900px;
+  text-align: center;
+}
+
+h1 {
+  margin-bottom: 30px;
+}
+
+.puzzle-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.piece {
+  background: rgba(0,0,0,0.6);
+  padding: 20px;
+  border-radius: 20px;
+  min-height: 200px;
+  box-shadow: 0 0 25px rgba(255,0,80,0.2);
+  opacity: 0.25;
+  transition: 0.5s ease;
+  position: relative;
+}
+
+.piece.unlocked {
+  opacity: 1;
+  box-shadow: 0 0 35px rgba(255,0,100,0.6);
+  transform: scale(1.03);
+}
+
+.clause {
+  margin-top: 12px;
+  font-weight: bold;
+  color: #ff9aa2;
+}
+
+.unlock-section {
+  margin-top: 30px;
+}
+
+input {
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  width: 240px;
+}
+
+button {
+  padding: 10px 20px;
+  background: #ff004c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-left: 10px;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: #ff3366;
+}
+
+.accept-btn {
+  margin-top: 30px;
+  display: none;
+  font-size: 18px;
+}
+
+.final-screen {
+  font-size: 24px;
+  margin-top: 30px;
+  animation: fadeIn 2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>Our Valentine Contract</h1>
+  
+  <div class="puzzle-grid" id="grid"></div>
+
+  <div class="unlock-section" id="unlockArea">
+    <input type="text" id="keyInput" placeholder="Enter next key">
+    <button onclick="unlock()">Unlock</button>
+  </div>
+
+  <button class="accept-btn" id="acceptBtn" onclick="acceptContract()">
+    Accept Our Future
+  </button>
+
+  <div id="finalMessage"></div>
+</div>
+
+<script>
+const fragments = [
+  {
+    title: "Fragment I — The Beginning",
+    text: "We began with comfort, with conversations that lasted longer than planned and goodnights that always felt too short. What started casually became intentional without either of us forcing it. It was a gradual realization, almost unnoticed at first, that you were becoming my favorite part of the day. Somewhere along the way, quietly and naturally, we built this message by message, call by call, decision by decision 💕.",
+    clause: "Clause 1: We chose each other intentionally.",
+    key: "1524"
+  },
+  {
+    title: "Fragment II — The Distance",
+    text: "Miles stood between us, but effort filled the gap. We did not let silence grow where consistency could exist. Time zones changed our clocks, not our commitment. Screens replaced touch, but they never replaced intention. Through it all, we learned that love is not proven by accessibility. It is proven by presence 🌎✨.",
+    clause: "Clause 2: Distance is geography, not a decision.",
+    key: "1432"
+  },
+  {
+    title: "Fragment III — The Strength",
+    text: "There were days when we were tired, but never too tired for each other. Just two people showing up. When one felt low, the other leaned in, not away. We did not compete for attention. We competed to care better 🤝💖.",
+    clause: "Clause 3: Effort will remain mutual.",
+    key: "love me like you do"
+  },
+  {
+    title: "Fragment IV — The Future Date",
+    text: "Next Valentine’s. No screens glowing between us, just your hands in mine and a hug that lasts longer than it needs to. Just you standing in front of me, finally within reach. Your favorite color on you. My heartbeat slightly faster than usual. No distance left between us. The moment our eyes meet in person, that is when this chapter becomes real 💫💫.",
+    clause: "Clause 4: Our next Valentine’s will be physical, not virtual.",
+    key: "me and you"
+  },
+  {
+    title: "Fragment V — The Promise",
+    text: "What we have is worth protecting. We will not let ego win where love should lead. We will speak, even when it is uncomfortable. We will stay, even when it is hard. We will cherish this always and forever 💍💝.",
+    clause: "Clause 5: We protect what we’re building.",
+    key: "my jaan my love"
+  },
+  {
+    title: "Fragment VI — The Choice",
+    text: "We choose each other beyond today. This is not about Valentine’s Day. It is about the days after it. If love is a decision, then this is ours. Always and forever ♾️💘.",
+    clause: "Clause 6: This is not temporary.",
+    key: "always and forever"
+  }
+];
+
+let currentIndex = sessionStorage.getItem("progress")
+  ? parseInt(sessionStorage.getItem("progress"))
+  : 0;
+
+const grid = document.getElementById("grid");
+
+function initializeGrid() {
+  grid.innerHTML = "";
+  for (let i = 0; i < fragments.length; i++) {
+    const div = document.createElement("div");
+    div.classList.add("piece");
+    div.id = "piece-" + i;
+    grid.appendChild(div);
+  }
+}
+
+function unlock() {
+  const input = document.getElementById("keyInput");
+  const value = input.value.trim().toLowerCase();
+
+  if (value === fragments[currentIndex].key.toLowerCase()) {
+    revealPiece(currentIndex);
+    currentIndex++;
+    sessionStorage.setItem("progress", currentIndex);
+    input.value = "";
+
+    if (currentIndex === fragments.length) {
+      document.getElementById("unlockArea").style.display = "none";
+      document.getElementById("acceptBtn").style.display = "inline-block";
+    }
+  }
+}
+
+function revealPiece(index) {
+  const piece = document.getElementById("piece-" + index);
+  const frag = fragments[index];
+
+  piece.innerHTML = `
+    <h3>${frag.title}</h3>
+    <p>${frag.text}</p>
+    <div class="clause">${frag.clause}</div>
+  `;
+  piece.classList.add("unlocked");
+}
+
+function acceptContract() {
+  document.getElementById("acceptBtn").style.display = "none";
+  document.getElementById("finalMessage").innerHTML =
+    `<div class="final-screen">
+      Contract Accepted Successfully ❤️<br><br>
+      Harsh + Prachi ♾️<br><br>
+      You signed up forever.
+    </div>`;
+}
+
+initializeGrid();
+
+for (let i = 0; i < currentIndex; i++) {
+  revealPiece(i);
+}
+
+if (currentIndex === fragments.length) {
+  document.getElementById("unlockArea").style.display = "none";
+  document.getElementById("acceptBtn").style.display = "inline-block";
+}
+</script>
+
+</body>
+</html>
